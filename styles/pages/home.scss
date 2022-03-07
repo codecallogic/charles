@@ -46,7 +46,7 @@
 
     &-item {
       width: 20rem;
-      height: 22.5rem;
+      height: 24.5rem;
       margin-right: 1rem;
       margin-bottom: 1rem;
       background-color: $color-scheme-2;
@@ -68,6 +68,22 @@
         font-size: 1.2rem;
         font-weight: 700;
         text-transform: uppercase;
+      }
+
+      &-owner {
+        margin: 0 auto;
+        width: max-content;
+        text-align: center;
+        padding: 0.3rem 1rem;
+        font-size: 1.2rem;
+        font-weight: 500;
+        background-color: white;
+        color: black;
+        border-radius: 1.2rem;
+
+        &:hover {
+          cursor: pointer;
+        }
       }
 
       &-description {

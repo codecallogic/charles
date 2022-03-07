@@ -27,6 +27,7 @@ const Home = ({
 
     try {
       const response = await axios.post(`${API}/spotify/search`, {search: search, type: 'playlist', token: token})
+      console.log(response.data)
       setLoading('')
       if(response.data.playlists) return setList(response.data.playlists.items)
     } catch (error) {
@@ -38,7 +39,6 @@ const Home = ({
   }
 
   useEffect(() => {
-    console.log(list)
     if(!token) window.location = `${authEndpoint}?client_id=${SPOTIFY_CLIENT}&response_type=code&redirect_uri=${DOMAIN}&scope=${scopes}`
   }, [token])
   
@@ -62,10 +62,11 @@ const Home = ({
       <div className="home-message">{message ? message : ''}</div>
       <div className="home-items">
         { list.length > 0 && list.map((item, idx) => 
-          <div key={idx} className="home-items-item" onClick={() => window.open(`${item.uri}`, '_blank')}>
+          <div key={idx} className="home-items-item" onClick={(e) => (e.stopPropagation(), window.open(`${item.external_urls.spotify}`, '_blank'))}>
             <img src={item.images[0] ? item.images[0].url : 'https://www.salonlfc.com/wp-content/uploads/2018/01/image-not-found-scaled.png'}/>
             <div className="home-items-item-name">{ item.name ? item.name.substring(0, 40): 'No name'} {item.name.length > 40 ? '...' : ''}</div>
-            <div className="home-items-item-description">{item.description ? item.description.substring(0, 40) : 'No description'} {item.description.length > 40 ? '...' : ''}</div>
+            <div className="home-items-item-owner" onCLick={(e) => (e.stopPropagation(), window.open(item.owner.uri, '_target'))}>Owner: {item.owner ? item.owner.display_name : 'No owner'}</div>
+            <div className="home-items-item-description">{item.description ? item.description.substring(0, 40).replace( /(<([^>]+)>)/ig, '') : 'No description'} {item.description.length > 40 ? '...' : ''}</div>
           </div>
         )}
         { list.length == 0 && !loading && <span style={{color: 'black'}}>Search to load items</span>}
