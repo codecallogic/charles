@@ -39,6 +39,7 @@ const Home = ({
   }
 
   useEffect(() => {
+    console.log(token)
     if(!token) window.location = `${authEndpoint}?client_id=${SPOTIFY_CLIENT}&response_type=code&redirect_uri=${DOMAIN}&scope=${scopes}`
   }, [token])
   
@@ -53,6 +54,7 @@ const Home = ({
             type="text"
             placeholder="Search playlist"
             onChange={(e) => (setMessage(''), setSearch(e.target.value))}
+            onKeyPress={(e) => e.key == 'Enter' ? Search() : null}
           />
           <div className="search-bar-svg" onClick={(e) => Search()}>
             <SVG svg={'search'}></SVG>
