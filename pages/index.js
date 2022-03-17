@@ -44,8 +44,9 @@ const Home = ({
       const response = await axios.post(`${API}/spotify/search`, {search: search, type: 'playlist', token: token})
       // console.log(response.data)
       setLoading('')
-      if(response.data.error) return setMessage(response.data.error.message)
+      if(response.data.error) return (setMessage(response.data.error.message), `${authEndpoint}?client_id=${SPOTIFY_CLIENT}&response_type=code&redirect_uri=${DOMAIN}&scope=${scopes}`)
       if(response.data.playlists) return setList(response.data.playlists.items)
+
     } catch (error) {
       setLoading('')
       console.log(error)

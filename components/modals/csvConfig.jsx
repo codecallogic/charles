@@ -214,7 +214,7 @@ const CSVConfig = ({
               )}
             >
             </label>
-            <span>Export Socials</span>
+            <span>Export Email</span>
           </div>
 
           <div className="form-group-checkbox">
