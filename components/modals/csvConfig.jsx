@@ -128,6 +128,29 @@ const CSVConfig = ({
           <div className="form-group-checkbox">
             <input 
               type="checkbox" 
+              name="lastModified" 
+              id="lastModified" 
+              hidden={true} 
+              checked={stateData.lastModified ? true : false} 
+              readOnly
+            />
+            <label 
+              htmlFor="socials" 
+              onClick={() => (
+                stateData.socials
+                ? 
+                stateMethod(createType, 'lastModified', false) 
+                : 
+                stateMethod(createType, 'lastModified', true)
+              )}
+            >
+            </label>
+            <span>Export Last Modified</span>
+          </div>
+
+          <div className="form-group-checkbox">
+            <input 
+              type="checkbox" 
               name="ownerName" 
               id="ownerName" 
               hidden={true} 

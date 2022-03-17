@@ -3,6 +3,7 @@ const initialState = {
   followers: false,
   tracks: false,
   popularity: false,
+  lastModified: false,
   ownerName: false,
   links: false,
   socials: false,
