@@ -29,10 +29,11 @@ const Home = ({
 
   const [search, setSearch] = useState('')
   const [message, setMessage] = useState('')
-  const [loading, setLoading] = useState('')
+  const [loading, setLoading] = useState('export_one')
   const [list, setList] = useState([])
   const [svg, setSVG] = useState('dropdown')
   const [modal, setModal] = useState('')
+  const [current, setCurrent] = useState('')
   
   const Search = async () => {
     if(authorization) return window.location = `${authEndpoint}?client_id=${SPOTIFY_CLIENT}&response_type=code&redirect_uri=${DOMAIN}&scope=${scopes}`
@@ -92,7 +93,7 @@ const Home = ({
             </div>
             <div 
               className="home-items-item-owner" 
-              onCLick={(e) => (e.stopPropagation(), window.open(item.owner.uri, '_target'))}>
+              onClick={(e) => (e.stopPropagation(), window.open(item.owner.uri, '_target'))}>
                 Owner: {item.owner ? item.owner.display_name : 'No owner'}
             </div>
             <div 
@@ -101,7 +102,15 @@ const Home = ({
             </div>
             <div 
               className="home-items-item-dropdown" 
-              onClick={(e) => (e.stopPropagation(), svg == `close-${idx}` ? (setSVG('dropdown'), modal == 'csv-file' ? setModal('') : setModal('csv-file')) : (setSVG(`close-${idx}`), modal == 'csv-file' ? setModal('') : setModal('csv-file')))}
+              onClick={(e) => (
+                e.stopPropagation(), 
+                svg == `close-${idx}` 
+                ? 
+                (setSVG('dropdown'), modal == 'csv-file' ? setModal('') : (setModal('csv-file'), setCurrent(idx))) 
+                : 
+                (setSVG(`close-${idx}`), modal == 'csv-file' ? setModal('') : (setModal('csv-file'), setCurrent(idx)))
+                )
+                }
             >
               {svg == `close-${idx}` ? <SVG svg={'close'}></SVG> : <SVG svg={'dropdown'}></SVG>}
             </div>
@@ -125,6 +134,8 @@ const Home = ({
         resetMethod={resetType}
         loading={loading}
         setLoading={setLoading}
+        list={list}
+        current={current}
       />
     }
 

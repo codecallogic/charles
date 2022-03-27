@@ -1,4 +1,7 @@
+import { useState, useEffect } from 'react'
 import SVG from '../../files/svg'
+import axios from 'axios'
+import { API, PUBLIC_FILES } from '../../config'
 
 const CSVConfig = ({
   setModal,
@@ -9,12 +12,73 @@ const CSVConfig = ({
   //// REDUX
   stateData,
   stateMethod,
-  resetMethod
+  resetMethod,
+
+  //// DATA
+  list,
+  current,
   
 }) => {
   const createType = 'CREATE_CSV'
   const resetType = 'RESET_TYPE'
   const loadingColor = 'white'
+  const [message, setMessage] = useState('')
+  
+  const generateCSV = async (e, loadingType) => {
+    e.preventDefault()
+    setLoading(loadingType)
+    let allow = []
+    let rows = []
+    
+    for(let key in stateData){
+      if(stateData[key]){
+        allow.push(key)
+      }
+    }
+
+    if(loadingType == 'export_one'){
+      let data = new Object()    
+      allow.forEach((item) => {    
+        data[item] = list[current][item]
+        
+        if(item == 'tracks') data[item] = list[current][item].total
+        if(item == 'socials') data[item] = list[current]['description'].match(/(@[a-zA-Z0-9._-].*)/)[0]
+        if(item == 'ownerName') data['ownerName'] = list[current]['owner'].display_name
+        if(item == 'url') data['url'] = list[current]['external_urls'].spotify
+        
+      })
+      rows.push(data)
+    }
+
+    if(loadingType == 'export_all'){
+      list.forEach((playlist) => {
+        let data = new Object()    
+        allow.forEach((item) => {    
+          data[item] = playlist[item]
+          
+          if(item == 'tracks') data[item] = playlist[item].total
+          if(item == 'socials') data[item] = playlist['description'].match(/(@[a-zA-Z0-9._-].*)/)[0]
+          if(item == 'ownerName') data['ownerName'] = playlist['owner'].display_name
+          if(item == 'url') data['url'] = playlist['external_urls'].spotify
+          
+        })
+        rows.push(data)
+      })
+    }
+    
+    try {
+
+      const response = await axios.post(`${API}/csv/generate`, rows)
+      setLoading('')
+      setMessage(response.data)
+      
+    } catch (error) {
+      console.log(error)
+      setLoading('')
+      if(error)  error.response ? setMessage(error.response.data) : setMessage('Error ocurred generating csv file')
+    }
+  }
+
   
   return (
     <div className="modal">
@@ -135,9 +199,9 @@ const CSVConfig = ({
               readOnly
             />
             <label 
-              htmlFor="socials" 
+              htmlFor="lastModified" 
               onClick={() => (
-                stateData.socials
+                stateData.lastModified
                 ? 
                 stateMethod(createType, 'lastModified', false) 
                 : 
@@ -289,20 +353,20 @@ const CSVConfig = ({
           <div className="form-group-checkbox">
             <input 
               type="checkbox" 
-              name="spotifyURI" 
-              id="spotifyURI" 
+              name="uri" 
+              id="uri" 
               hidden={true} 
-              checked={stateData.spotifyURI ? true : false} 
+              checked={stateData.uri ? true : false} 
               readOnly
             />
             <label 
               htmlFor="spotifyURI" 
               onClick={() => (
-                stateData.spotifyURI
+                stateData.uri
                 ? 
-                stateMethod(createType, 'spotifyURI', false) 
+                stateMethod(createType, 'uri', false) 
                 : 
-                stateMethod(createType, 'spotifyURI', true)
+                stateMethod(createType, 'uri', true)
               )}
             >
             </label>
@@ -312,14 +376,19 @@ const CSVConfig = ({
         </div>
 
         <div className="modal-box-footer">
+          {message &&
+          <span className="form-group-message">
+            Exported to: <a href={`${PUBLIC_FILES}/data-${message}.csv`} target="_blank">Data-{message}.csv</a>
+          </span>
+          }
           <button 
             className="form-group-button" 
             onClick={(e) => (
-              null
+              generateCSV(e, 'export_one')
             )}
             >
             {loading == 'export_one' ? 
-            <div className="loading">
+            <div className="loading-relative">
               <span style={{backgroundColor: loadingColor}}></span>
               <span style={{backgroundColor: loadingColor}}></span>
               <span style={{backgroundColor: loadingColor}}></span>
@@ -331,11 +400,11 @@ const CSVConfig = ({
           <button 
             className="form-group-button" 
             onClick={(e) => (
-              null
+              generateCSV(e, 'export_all')
             )}
             >
             {loading == 'export_all' ? 
-            <div className="loading">
+            <div className="loading-relative">
               <span style={{backgroundColor: loadingColor}}></span>
               <span style={{backgroundColor: loadingColor}}></span>
               <span style={{backgroundColor: loadingColor}}></span>

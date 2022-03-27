@@ -10,7 +10,7 @@ const initialState = {
   email: false,
   url: false,
   description: false,
-  spotifyURI: false,
+  uri: false,
 }
 
 export const csvReducer = (state = initialState, action) => {
