@@ -42,7 +42,13 @@ const CSVConfig = ({
         data[item] = list[current][item]
         
         if(item == 'tracks') data[item] = list[current][item].total
-        if(item == 'socials') data[item] = list[current]['description'].match(/(@[a-zA-Z0-9._-].*)/)[0]
+
+        if(item == 'socials'){
+          if(list[current]['description'].match(/(@[a-zA-Z0-9._-].*)/)){
+            data[item] = list[current]['description'].match(/(@[a-zA-Z0-9._-].*)/)[0]
+          }
+        }
+
         if(item == 'ownerName') data['ownerName'] = list[current]['owner'].display_name
         if(item == 'url') data['url'] = list[current]['external_urls'].spotify
         
@@ -57,7 +63,13 @@ const CSVConfig = ({
           data[item] = playlist[item]
           
           if(item == 'tracks') data[item] = playlist[item].total
-          if(item == 'socials') data[item] = playlist['description'].match(/(@[a-zA-Z0-9._-].*)/)[0]
+
+          if(item == 'socials'){
+            if(playlist['description'].match(/(@[a-zA-Z0-9._-].*)/)){
+              data[item] = playlist['description'].match(/(@[a-zA-Z0-9._-].*)/)[0]
+            }
+          }
+
           if(item == 'ownerName') data['ownerName'] = playlist['owner'].display_name
           if(item == 'url') data['url'] = playlist['external_urls'].spotify
           
