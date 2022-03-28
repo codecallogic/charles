@@ -59,6 +59,10 @@ const Home = ({
   useEffect(() => {
     if(!token) window.location = `${authEndpoint}?client_id=${SPOTIFY_CLIENT}&response_type=code&redirect_uri=${DOMAIN}&scope=${scopes}`
   }, [token])
+
+  useEffect( async () => {
+    console.log(list)
+  }, [list])
   
   return (
     <>
@@ -127,6 +131,7 @@ const Home = ({
 
     { modal == 'csv-file' &&
       <CSVConfig
+        token={token}
         setModal={setModal}
         setSVG={setSVG}
         stateData={csv}

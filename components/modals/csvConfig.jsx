@@ -2,8 +2,10 @@ import { useState, useEffect } from 'react'
 import SVG from '../../files/svg'
 import axios from 'axios'
 import { API, PUBLIC_FILES } from '../../config'
+import { isNumber } from '../../helpers/validations'
 
 const CSVConfig = ({
+  token,
   setModal,
   setSVG,
   loading,
@@ -23,6 +25,7 @@ const CSVConfig = ({
   const resetType = 'RESET_TYPE'
   const loadingColor = 'white'
   const [message, setMessage] = useState('')
+  const [followersLimit, setFollowersLimit] = useState('')
   
   const generateCSV = async (e, loadingType) => {
     e.preventDefault()
@@ -36,50 +39,79 @@ const CSVConfig = ({
       }
     }
 
+    //// SINGLE PLAYLIST
     if(loadingType == 'export_one'){
-      let data = new Object()    
-      allow.forEach((item) => {    
-        data[item] = list[current][item]
-        
-        if(item == 'tracks') data[item] = list[current][item].total
+      let data = new Object()
 
-        if(item == 'socials'){
-          if(list[current]['description'].match(/(@[a-zA-Z0-9._-].*)/)){
-            data[item] = list[current]['description'].match(/(@[a-zA-Z0-9._-].*)/)[0]
-          }
-        }
+      await Promise.all(allow.map( async (item) => { 
+        try {
 
-        if(item == 'ownerName') data['ownerName'] = list[current]['owner'].display_name
-        if(item == 'url') data['url'] = list[current]['external_urls'].spotify
-        
-      })
-      rows.push(data)
-    }
-
-    if(loadingType == 'export_all'){
-      list.forEach((playlist) => {
-        let data = new Object()    
-        allow.forEach((item) => {    
-          data[item] = playlist[item]
+          data[item] = list[current][item]
           
-          if(item == 'tracks') data[item] = playlist[item].total
+          if(item == 'tracks') data[item] = list[current][item].total
 
           if(item == 'socials'){
-            if(playlist['description'].match(/(@[a-zA-Z0-9._-].*)/)){
-              data[item] = playlist['description'].match(/(@[a-zA-Z0-9._-].*)/)[0]
+            if(list[current]['description'].match(/(@[a-zA-Z0-9._-].*)/)){
+              data[item] = list[current]['description'].match(/(@[a-zA-Z0-9._-].*)/)[0]
             }
           }
 
-          if(item == 'ownerName') data['ownerName'] = playlist['owner'].display_name
-          if(item == 'url') data['url'] = playlist['external_urls'].spotify
+          if(item == 'ownerName') data['ownerName'] = list[current]['owner'].display_name
+          if(item == 'url') data['url'] = list[current]['external_urls'].spotify
           
-        })
-        rows.push(data)
-      })
-    }
-    
-    try {
+          if(item == 'followers'){
+            const response = await axios.post(`${API}/spotify/playlist`, {id: list[current]['id'], token: token})
+            if(response.data.followers.total >= +followersLimit) data['followers'] = response.data.followers.total
+          }
 
+        } catch (error) {
+          console.log(error)
+          if(error) error.response ? setMessage(error.response.data) : setMessage('Error ocurred generating csv file')
+
+        }
+
+      }))
+      
+      rows.push(data)
+    }
+
+    //// MULTIPLE PLAYLIST
+    if(loadingType == 'export_all'){
+      await Promise.all(list.map( async (playlist) => {
+        let data = new Object()  
+        
+        await Promise.all(allow.map( async (item) => { 
+          try {
+            data[item] = playlist[item]
+          
+            if(item == 'tracks') data[item] = playlist[item].total
+
+            if(item == 'socials'){
+              if(playlist['description'].match(/(@[a-zA-Z0-9._-].*)/)){
+                data[item] = playlist['description'].match(/(@[a-zA-Z0-9._-].*)/)[0]
+              }
+            }
+
+            if(item == 'ownerName') data['ownerName'] = playlist['owner'].display_name
+            if(item == 'url') data['url'] = playlist['external_urls'].spotify
+
+            if(item == 'followers'){
+              const response = await axios.post(`${API}/spotify/playlist`, {id: playlist['id'], token: token})
+              if(response.data.followers.total >= +followersLimit) data['followers'] = response.data.followers.total
+            }
+            
+          } catch (error) {
+            console.log(error)
+            if(error) error.response ? setMessage(error.response.data) : setMessage('Error ocurred generating csv file')
+          }
+          
+        }))
+
+        rows.push(data)
+      }))
+    }
+
+    try {
       const response = await axios.post(`${API}/csv/generate`, rows)
       setLoading('')
       setMessage(response.data)
@@ -90,7 +122,6 @@ const CSVConfig = ({
       if(error)  error.response ? setMessage(error.response.data) : setMessage('Error ocurred generating csv file')
     }
   }
-
   
   return (
     <div className="modal">
@@ -383,6 +414,15 @@ const CSVConfig = ({
             >
             </label>
             <span>Export Spotify URI</span>
+          </div>
+          <div className="form-group">
+            <input
+              id="followersLimit"
+              type="text"
+              placeholder="Followers limit"
+              value={followersLimit}
+              onChange={(e) => (setMessage(''), isNumber('followersLimit'), setFollowersLimit(e.target.value))}
+            />
           </div>
 
         </div>
