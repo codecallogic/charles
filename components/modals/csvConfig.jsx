@@ -61,7 +61,7 @@ const CSVConfig = ({
           
           if(item == 'followers'){
             const response = await axios.post(`${API}/spotify/playlist`, {id: list[current]['id'], token: token})
-            if(response.data.followers.total >= +followersLimit) data['followers'] = response.data.followers.total
+            if(response.data.followers.total > +followersLimit) data['followers'] = response.data.followers.total
           }
 
         } catch (error) {
@@ -97,7 +97,7 @@ const CSVConfig = ({
 
             if(item == 'followers'){
               const response = await axios.post(`${API}/spotify/playlist`, {id: playlist['id'], token: token})
-              if(response.data.followers.total >= +followersLimit) data['followers'] = response.data.followers.total
+              if(response.data.followers.total > +followersLimit) data['followers'] = response.data.followers.total
             }
             
           } catch (error) {
