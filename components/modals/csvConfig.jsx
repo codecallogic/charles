@@ -27,6 +27,8 @@ const CSVConfig = ({
   const [message, setMessage] = useState('')
   const [followersLimit, setFollowersLimit] = useState('')
   
+  // console.log(list)
+  
   const generateCSV = async (e, loadingType) => {
     e.preventDefault()
     setLoading(loadingType)
@@ -51,9 +53,15 @@ const CSVConfig = ({
           if(item == 'tracks') data[item] = list[current][item].total
 
           if(item == 'socials'){
-            if(list[current]['description'].match(/(@[a-zA-Z0-9._-].*)/)){
-              data[item] = list[current]['description'].match(/(@[a-zA-Z0-9._-].*)/)[0]
-            }
+            let social = data[item] = list[current]['description'].match(/(@[a-zA-Z0-9._-].*)/)
+            if(social) data[item] = social[0]
+            if(!social) data[item] = ''
+          }
+
+          if(item == 'email'){
+            let email = list[current]['description'].match(/([a-zA-Z0-9._-]+@[a-zA-Z0-9._-]+\.[a-zA-Z0-9_-]+)/gi)
+            if(email) data[item] = email[0]
+            if(!email) data[item] = ''
           }
 
           if(item == 'ownerName') data['ownerName'] = list[current]['owner'].display_name
@@ -62,7 +70,7 @@ const CSVConfig = ({
           if(item == 'followers'){
             const response = await axios.post(`${API}/spotify/playlist`, {id: list[current]['id'], token: token})
             if(+response.data.followers.total > +followersLimit) data['followers'] = response.data.followers.total
-            if(+response.data.followers.total < +followersLimit) data['followers'] = `< ${followersLimit}`
+            if(+response.data.followers.total < +followersLimit) data['followers'] = `${response.data.followers.total} < ${followersLimit}`
           }
 
         } catch (error) {
@@ -88,9 +96,15 @@ const CSVConfig = ({
             if(item == 'tracks') data[item] = playlist[item].total
 
             if(item == 'socials'){
-              if(playlist['description'].match(/(@[a-zA-Z0-9._-].*)/)){
-                data[item] = playlist['description'].match(/(@[a-zA-Z0-9._-].*)/)[0]
-              }
+              let social = data[item] = playlist['description'].match(/(@[a-zA-Z0-9._-].*)/)
+              if(social) data[item] = social[0]
+              if(!social) data[item] = ''
+            }
+
+            if(item == 'email'){
+              let email = playlist['description'].match(/([a-zA-Z0-9._-]+@[a-zA-Z0-9._-]+\.[a-zA-Z0-9_-]+)/gi)
+              if(email) data[item] = email[0]
+              if(!email) data[item] = ''
             }
 
             if(item == 'ownerName') data['ownerName'] = playlist['owner'].display_name
@@ -99,7 +113,7 @@ const CSVConfig = ({
             if(item == 'followers'){
               const response = await axios.post(`${API}/spotify/playlist`, {id: playlist['id'], token: token})
               if(+response.data.followers.total > +followersLimit) data['followers'] = response.data.followers.total
-              if(+response.data.followers.total < +followersLimit) data['followers'] = `< ${followersLimit}`
+              if(+response.data.followers.total < +followersLimit) data['followers'] = `${response.data.followers.total} < ${followersLimit}`
             }
             
           } catch (error) {
@@ -112,7 +126,7 @@ const CSVConfig = ({
         rows.push(data)
       }))
     }
-
+    
     try {
       const response = await axios.post(`${API}/csv/generate`, rows)
       setLoading('')
@@ -421,7 +435,7 @@ const CSVConfig = ({
             <input
               id="followersLimit"
               type="text"
-              placeholder="Followers limit"
+              placeholder="Followers minimum"
               value={followersLimit}
               onChange={(e) => (setMessage(''), isNumber('followersLimit'), setFollowersLimit(e.target.value))}
             />

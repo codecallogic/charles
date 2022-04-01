@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import SVG from '../files/svg'
 import axios from 'axios'
 import { API, DOMAIN, SPOTIFY_CLIENT } from '../config'
-import {connect} from 'react-redux'
+import { connect } from 'react-redux'
 
 //// MODALS
 import CSVConfig from '../components/modals/csvConfig'
@@ -11,12 +11,13 @@ axios.defaults.withCredentials = true
 
 const authEndpoint = "https://accounts.spotify.com/authorize";
 const scopes = [
-  "user-read-private"
+  "user-read-private user-read-email"
 ];
 
 const Home = ({
   token,
   authorization,
+  user,
 
   //// STATE
   csv,
@@ -26,7 +27,7 @@ const Home = ({
   resetType
   
 }) => {
-
+  
   const [search, setSearch] = useState('')
   const [message, setMessage] = useState('')
   const [loading, setLoading] = useState('export_one')
@@ -56,13 +57,15 @@ const Home = ({
     
   }
 
+  const reload = () => { 
+    setTimeout( () => {
+      window.location.reload()
+    }, 1500)
+  }
+
   useEffect(() => {
     if(!token) window.location = `${authEndpoint}?client_id=${SPOTIFY_CLIENT}&response_type=code&redirect_uri=${DOMAIN}&scope=${scopes}`
   }, [token])
-
-  useEffect( async () => {
-    console.log(list)
-  }, [list])
   
   return (
     <>
@@ -80,7 +83,7 @@ const Home = ({
           </div>
         </div>
       </div>
-      <div className="home-message">{message ? message : ''}</div>
+      <div className="home-message">{message ? (message, reload()) : ''}</div>
       <div className="home-items">
         { list.length > 0 && list.map((item, idx) => 
           <div 
@@ -168,6 +171,7 @@ Home.getInitialProps = async ({query}) =>  {
 
   let token = null
   let message = null
+  let user = null
 
   if(query.code){
     try {
@@ -180,11 +184,24 @@ Home.getInitialProps = async ({query}) =>  {
     }
   }
 
+  if(token){
+    try {
+      const response = await axios.post(`${API}/spotify/user`, {token: token})
+      user = response.data
+      
+    } catch (error) {
+      console.log(error.response.data)
+      if(error) message = error.response.data
+      
+    }
+  }
+
   if(message) message = message.error_description
   
   return {
     token: token ? token : null,
-    authorization: message ? message : null
+    authorization: message ? message : null,
+    user: user ? user : null
   }
 }
 
