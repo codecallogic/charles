@@ -184,17 +184,17 @@ Home.getInitialProps = async ({query}) =>  {
     }
   }
 
-  if(token){
-    try {
-      const response = await axios.post(`${API}/spotify/user`, {token: token})
-      user = response.data
+  // if(token){
+  //   try {
+  //     const response = await axios.post(`${API}/spotify/user`, {token: token})
+  //     user = response.data
       
-    } catch (error) {
-      console.log(error.response.data)
-      if(error) message = error.response.data
+  //   } catch (error) {
+  //     console.log(error.response.data)
+  //     if(error) message = error.response.data
       
-    }
-  }
+  //   }
+  // }
 
   if(message) message = message.error_description
   
