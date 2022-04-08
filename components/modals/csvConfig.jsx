@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import SVG from '../../files/svg'
 import axios from 'axios'
 import { API, PUBLIC_FILES } from '../../config'
-import { isNumber } from '../../helpers/validations'
+import { checkLastModified, isNumber } from '../../helpers/validations'
 
 const CSVConfig = ({
   token,
@@ -73,6 +73,11 @@ const CSVConfig = ({
             if(+response.data.followers.total < +followersLimit) data['followers'] = `${response.data.followers.total} < ${followersLimit}`
           }
 
+          if(item == 'lastModified'){
+            const response = await axios.post(`${API}/spotify/playlist`, {id: list[current]['id'], token: token})
+            if( response.data.tracks.items ){ data['lastModified'] = checkLastModified(response.data.tracks.items) }
+          }
+
         } catch (error) {
           console.log(error)
           if(error) error.response ? setMessage(error.response.data) : setMessage('Error ocurred generating csv file')
@@ -114,6 +119,11 @@ const CSVConfig = ({
               const response = await axios.post(`${API}/spotify/playlist`, {id: playlist['id'], token: token})
               if(+response.data.followers.total > +followersLimit) data['followers'] = response.data.followers.total
               if(+response.data.followers.total < +followersLimit) data['followers'] = `${response.data.followers.total} < ${followersLimit}`
+            }
+
+            if(item == 'lastModified'){
+              const response = await axios.post(`${API}/spotify/playlist`, {id: playlist['id'], token: token})
+              if( response.data.tracks.items ){ data['lastModified'] = checkLastModified(response.data.tracks.items) }
             }
             
           } catch (error) {

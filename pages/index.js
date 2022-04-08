@@ -54,7 +54,7 @@ const Home = ({
       console.log(error)
       if(error) error.response ? setMessage(error.response.data) : setMessage('Error occurred search for items, please try again later')
     }
-    
+      
   }
 
   const reload = () => { 
