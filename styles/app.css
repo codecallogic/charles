@@ -498,6 +498,14 @@ body {
       .form-group-message a {
         color: #e84855;
         padding: 0 0.2rem; }
+    .form-group-error {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      font-size: 1.4rem;
+      color: red;
+      padding: 0.5rem 0; }
     .form-group-checkbox {
       display: flex;
       align-items: center;

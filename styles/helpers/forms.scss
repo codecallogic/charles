@@ -230,6 +230,16 @@
       }
     }
 
+    &-error {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      font-size: 1.4rem;
+      color: red;
+      padding: 0.5rem 0;
+    }
+
     &-checkbox {
       display: flex;
       align-items: center;

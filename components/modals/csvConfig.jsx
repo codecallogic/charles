@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import SVG from '../../files/svg'
 import axios from 'axios'
 import { API, PUBLIC_FILES } from '../../config'
-import { checkLastModified, isNumber } from '../../helpers/validations'
+import { checkLastModified, isNumber, validateEmail } from '../../helpers/validations'
 
 const CSVConfig = ({
   token,
@@ -25,13 +25,27 @@ const CSVConfig = ({
   const resetType = 'RESET_TYPE'
   const loadingColor = 'white'
   const [message, setMessage] = useState('')
+  const [error, setError] = useState('')
   const [followersLimit, setFollowersLimit] = useState('')
+  const [emailType, setEmailType] = useState('')
   
   // console.log(list)
+
+  useEffect(() => {
+    if(emailType){
+      document.getElementById('email').checked = true
+      stateMethod(createType, 'email', true) 
+    } else {
+      document.getElementById('email').checked = false
+      stateMethod(createType, 'email', false) 
+    }
+  }, [emailType ])
   
   const generateCSV = async (e, loadingType) => {
     e.preventDefault()
     setLoading(loadingType)
+    setError('')
+    
     let allow = []
     let rows = []
     
@@ -41,11 +55,23 @@ const CSVConfig = ({
       }
     }
 
+    if(emailType && !validateEmail('emailType')) return setError('Invalid email type, dont forget the @ symbol')
+
     //// SINGLE PLAYLIST
     if(loadingType == 'export_one'){
       let data = new Object()
+        
+      if(emailType){
+        let string = "([a-zA-Z0-9._-]+"+emailType+"+)"
+        let regex = new RegExp(string, "gi")
+        let email = list[current]['description'].match(regex)
+        
+        if(!email) return console.log('stop here')
+      }
+
 
       await Promise.all(allow.map( async (item) => { 
+        
         try {
 
           data[item] = list[current][item]
@@ -91,11 +117,20 @@ const CSVConfig = ({
 
     //// MULTIPLE PLAYLIST
     if(loadingType == 'export_all'){
-      await Promise.all(list.map( async (playlist) => {
+      await Promise.all(list.map( async (playlist, idx) => {
         let data = new Object()  
+        
+        if(emailType){
+          let string = "([a-zA-Z0-9._-]+"+emailType+"+)"
+          let regex = new RegExp(string, "gi")
+          let email = playlist['description'].match(regex)
+          
+          if(!email) return console.log('stop here')
+        }
         
         await Promise.all(allow.map( async (item) => { 
           try {
+
             data[item] = playlist[item]
           
             if(item == 'tracks') data[item] = playlist[item].total
@@ -450,6 +485,15 @@ const CSVConfig = ({
               onChange={(e) => (setMessage(''), isNumber('followersLimit'), setFollowersLimit(e.target.value))}
             />
           </div>
+          <div className="form-group">
+            <input
+              id="emailType"
+              type="text"
+              placeholder="Email Type"
+              value={emailType}
+              onChange={(e) => (setMessage(''), setEmailType(e.target.value))}
+            />
+          </div>
 
         </div>
 
@@ -457,6 +501,11 @@ const CSVConfig = ({
           {message &&
           <span className="form-group-message">
             Exported to: <a href={`${PUBLIC_FILES}/data-${message}.csv`} target="_blank">Data-{message}.csv</a>
+          </span>
+          }
+          {error &&
+          <span className="form-group-error">
+            {error}
           </span>
           }
           <button 
