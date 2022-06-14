@@ -10,6 +10,9 @@ const CSVConfig = ({
   setSVG,
   loading,
   setLoading,
+
+  //// STATE
+  searchParams,
   
   //// REDUX
   stateData,
@@ -21,25 +24,25 @@ const CSVConfig = ({
   current,
   
 }) => {
+  console.log(list)
   const createType = 'CREATE_CSV'
   const resetType = 'RESET_TYPE'
   const loadingColor = 'white'
   const [message, setMessage] = useState('')
   const [error, setError] = useState('')
   const [followersLimit, setFollowersLimit] = useState('')
-  const [emailType, setEmailType] = useState('')
   
   // console.log(list)
 
   useEffect(() => {
-    if(emailType){
+    if(searchParams.email){
       document.getElementById('email').checked = true
       stateMethod(createType, 'email', true) 
     } else {
       document.getElementById('email').checked = false
       stateMethod(createType, 'email', false) 
     }
-  }, [emailType ])
+  }, [searchParams.email ])
   
   const generateCSV = async (e, loadingType) => {
     e.preventDefault()
@@ -55,14 +58,12 @@ const CSVConfig = ({
       }
     }
 
-    if(emailType && !validateEmail('emailType')) return setError('Invalid email type, dont forget the @ symbol')
-
     //// SINGLE PLAYLIST
     if(loadingType == 'export_one'){
       let data = new Object()
         
-      if(emailType){
-        let string = "([a-zA-Z0-9._-]+"+emailType+"+)"
+      if(searchParams.email){
+        let string = "([a-zA-Z0-9._-]+"+searchParams.email+"+)"
         let regex = new RegExp(string, "gi")
         let email = list[current]['description'].match(regex)
         
@@ -120,8 +121,8 @@ const CSVConfig = ({
       await Promise.all(list.map( async (playlist, idx) => {
         let data = new Object()  
         
-        if(emailType){
-          let string = "([a-zA-Z0-9._-]+"+emailType+"+)"
+        if(searchParams.email){
+          let string = "([a-zA-Z0-9._-]+"+searchParams.email+"+)"
           let regex = new RegExp(string, "gi")
           let email = playlist['description'].match(regex)
           
@@ -485,15 +486,15 @@ const CSVConfig = ({
               onChange={(e) => (setMessage(''), isNumber('followersLimit'), setFollowersLimit(e.target.value))}
             />
           </div>
-          <div className="form-group">
+          {/* <div className="form-group">
             <input
-              id="emailType"
+              id="searchParams.email"
               type="text"
               placeholder="Email Type"
-              value={emailType}
+              value={searchParams.email}
               onChange={(e) => (setMessage(''), setEmailType(e.target.value))}
             />
-          </div>
+          </div> */}
 
         </div>
 

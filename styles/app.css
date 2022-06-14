@@ -53,15 +53,15 @@ body {
     background-color: white;
     background-image: url("/logo.png");
     background-position: center;
-    background-size: 80%;
+    background-size: 50%, contain;
     background-repeat: no-repeat;
     width: 100%;
     height: 100%;
     margin: 2rem 0 3rem 0;
+    padding: 2rem;
     border-radius: 3rem;
     box-shadow: 0.3rem 0.5rem 0.5rem 0.5rem rgba(0, 0, 0, 0.2);
     color: white;
-    padding: 2rem;
     font-size: 1.4rem;
     overflow-y: auto;
     position: relative; }
@@ -72,7 +72,7 @@ body {
       background-color: #ff9b71; }
     .home-items-item {
       width: 20rem;
-      height: 24.5rem;
+      height: 25rem;
       margin-right: 1rem;
       margin-bottom: 1rem;
       background-color: #2d3047;
@@ -93,6 +93,7 @@ body {
         font-weight: 700;
         text-transform: uppercase; }
       .home-items-item-owner {
+        max-width: 90% !important;
         margin: 0 auto;
         width: max-content;
         text-align: center;
@@ -107,7 +108,14 @@ body {
       .home-items-item-description {
         display: flex;
         justify-content: center;
-        padding: 1rem 2rem; }
+        padding: 1rem 2rem;
+        height: 6rem;
+        overflow-y: scroll; }
+        .home-items-item-description::-webkit-scrollbar {
+          width: 0.1rem;
+          height: 0.1rem; }
+        .home-items-item-description::-webkit-scrollbar-thumb {
+          background-color: #fffd82; }
       .home-items-item:hover {
         cursor: pointer;
         transform: scale(1.05); }
@@ -162,7 +170,8 @@ body {
     border-radius: 3rem;
     display: flex;
     align-items: center;
-    box-shadow: 0.3rem 0.5rem 0.3rem 0.3rem rgba(0, 0, 0, 0.2); }
+    box-shadow: 0.3rem 0.5rem 0.3rem 0.3rem rgba(0, 0, 0, 0.2);
+    position: relative; }
     .search-bar input {
       flex: 1;
       font-size: 1.4rem;
@@ -188,6 +197,31 @@ body {
           cursor: pointer; }
         .search-bar-svg svg:active {
           transform: translateY(-0.2rem); }
+    .search-bar-dropdown {
+      position: absolute;
+      top: 105%;
+      width: 100%;
+      height: auto;
+      border-radius: .5rem;
+      background-color: white;
+      box-shadow: 0.2rem 0.2rem 1rem 0.2rem rgba(0, 0, 0, 0.2); }
+      .search-bar-dropdown-item {
+        display: flex;
+        align-items: center;
+        padding: .5rem 1rem;
+        font-size: 1.2rem;
+        font-weight: 700;
+        border-bottom: 0.1rem dashed #2d3047;
+        transition: all .5s; }
+        .search-bar-dropdown-item svg {
+          width: 1.5rem;
+          height: 1.5rem;
+          margin-left: 1rem;
+          fill: #e84855; }
+        .search-bar-dropdown-item:hover {
+          background-color: #1b998b;
+          cursor: pointer;
+          color: white; }
 
 .modal {
   position: fixed;

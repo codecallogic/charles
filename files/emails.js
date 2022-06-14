@@ -1,0 +1,20 @@
+export const emails = [
+  '@one.com',
+  '@posteo.com',
+  '@juno.com',
+  '@yandex.com',
+  '@mail.com',
+  '@hotmail.com',
+  '@aol.com',
+  '@msn.com',
+  '@gmail.com',
+  '@live.com',
+  '@outlook.com',
+  '@mailbox.com',
+  '@icloud.com',
+  '@yahoo.com',
+  '@gmx.com',
+  '@zoho.com',
+  '@protonmail.com',
+  '@tutanota.com'
+]

@@ -7,6 +7,9 @@ import { connect } from 'react-redux'
 //// MODALS
 import CSVConfig from '../components/modals/csvConfig'
 
+//// LISTS
+import { emails } from '../files/emails'
+
 axios.defaults.withCredentials = true
 
 const authEndpoint = "https://accounts.spotify.com/authorize";
@@ -21,13 +24,14 @@ const Home = ({
 
   //// STATE
   csv,
+  searchParams,
 
   //// DISPATCH
   createType,
   resetType
   
 }) => {
-  
+
   const [search, setSearch] = useState('')
   const [message, setMessage] = useState('')
   const [loading, setLoading] = useState('export_one')
@@ -35,6 +39,8 @@ const Home = ({
   const [svg, setSVG] = useState('dropdown')
   const [modal, setModal] = useState('')
   const [current, setCurrent] = useState('')
+  const [dropdown, setDropdown] = useState('')
+  const [limit, setLimit] = useState(50)
   
   const Search = async () => {
     if(authorization) return window.location = `${authEndpoint}?client_id=${SPOTIFY_CLIENT}&response_type=code&redirect_uri=${DOMAIN}&scope=${scopes}`
@@ -43,7 +49,8 @@ const Home = ({
     setLoading('items')
 
     try {
-      const response = await axios.post(`${API}/spotify/search`, {search: search, type: 'playlist', token: token})
+
+      const response = await axios.post(`${API}/spotify/search`, {search: `${searchParams.email ? `${searchParams.email},` : ''}${search}`, type: 'playlist', token: token, limit: limit})
       // console.log(response.data)
       setLoading('')
       if(response.data.error) return (setMessage(response.data.error.message), `${authEndpoint}?client_id=${SPOTIFY_CLIENT}&response_type=code&redirect_uri=${DOMAIN}&scope=${scopes}`)
@@ -64,6 +71,10 @@ const Home = ({
   }
 
   useEffect(() => {
+    if(searchParams.email) setLimit(100)
+  }, [searchParams.email])
+
+  useEffect(() => {
     if(!token) window.location = `${authEndpoint}?client_id=${SPOTIFY_CLIENT}&response_type=code&redirect_uri=${DOMAIN}&scope=${scopes}`
   }, [token])
   
@@ -78,9 +89,27 @@ const Home = ({
             onChange={(e) => (setMessage(''), setSearch(e.target.value))}
             onKeyPress={(e) => e.key == 'Enter' ? Search() : null}
           />
+          <div className="search-bar-svg" onClick={(e) => dropdown == 'emails' ? setDropdown('') : setDropdown('emails')}>
+            <SVG svg={'email'}></SVG>
+          </div>
           <div className="search-bar-svg" onClick={(e) => Search()}>
             <SVG svg={'search'}></SVG>
           </div>
+
+          {dropdown == 'emails' && 
+          <div className="search-bar-dropdown">
+            { emails && emails.map( (item, idx) => 
+              <div 
+                key={idx} 
+                className="search-bar-dropdown-item"
+                onClick={() => (createType('CREATE_SEARCH', 'email', item), setDropdown(''))}
+              >
+                {item} {item === searchParams.email ? <SVG svg={'checkmark'}></SVG> : ''}
+              </div>
+            )}
+          </div>
+          }
+          
         </div>
       </div>
       <div className="home-message">{message ? (message, reload()) : ''}</div>
@@ -101,7 +130,7 @@ const Home = ({
             <div 
               className="home-items-item-owner" 
               onClick={(e) => (e.stopPropagation(), window.open(item.owner.uri, '_target'))}>
-                Owner: {item.owner ? item.owner.display_name : 'No owner'}
+                Owner: {item.owner ? item.owner.display_name.substring(0, 15) : 'No owner'}
             </div>
             <div 
               className="home-items-item-description">
@@ -144,6 +173,7 @@ const Home = ({
         setLoading={setLoading}
         list={list}
         current={current}
+        searchParams={searchParams}
       />
     }
 
@@ -156,7 +186,8 @@ const Home = ({
 
 const mapStateToProps = (state) => {
   return {
-    csv: state.csv
+    csv: state.csv,
+    searchParams: state.search
   }
 }
 

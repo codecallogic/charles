@@ -34,6 +34,7 @@
     display: flex;
     align-items: center;
     box-shadow: 0.3rem 0.5rem 0.3rem 0.3rem rgba(0, 0, 0, 0.2);
+    position: relative;
 
     input {
       flex: 1;
@@ -68,6 +69,40 @@
           transform: translateY(-0.2rem);
         }
       }
+    }
+
+    &-dropdown {
+      position: absolute;
+      top: 105%;
+      width: 100%;
+      height: auto;
+      border-radius: .5rem;
+      background-color: white;
+      box-shadow: .2rem .2rem 1rem .2rem rgba(0,0,0, .2);
+
+      &-item {
+        display: flex;
+        align-items: center;
+        padding: .5rem 1rem;
+        font-size: 1.2rem;
+        font-weight: 700;
+        border-bottom: .1rem dashed $color-scheme-2;
+        transition: all .5s;
+
+        svg {
+          width: 1.5rem;
+          height: 1.5rem;
+          margin-left: 1rem;
+          fill: $color-scheme-5;
+        }
+
+        &:hover {
+          background-color: $color-scheme-1;
+          cursor: pointer;
+          color: white;
+        }
+      }
+      
     }
   }
 }
