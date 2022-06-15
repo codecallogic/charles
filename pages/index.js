@@ -41,6 +41,7 @@ const Home = ({
   const [current, setCurrent] = useState('')
   const [dropdown, setDropdown] = useState('')
   const [limit, setLimit] = useState(50)
+  const [theme, setTheme] = useState('black')
   
   const Search = async () => {
     if(authorization) return window.location = `${authEndpoint}?client_id=${SPOTIFY_CLIENT}&response_type=code&redirect_uri=${DOMAIN}&scope=${scopes}`
@@ -80,8 +81,12 @@ const Home = ({
   
   return (
     <>
-    <div className="home">
+    <div className="home" style={{ backgroundColor: theme}}>
       <div className="search">
+        <div className="search-themes">
+          <div style={{ backgroundColor: 'black'}} onClick={ (e) => setTheme('black')}></div>
+          <div style={{ backgroundColor: '#1b998b'}} onClick={ (e) => setTheme('#1b998b')}></div>
+        </div>
         <div className="search-bar">
           <input 
             type="text"

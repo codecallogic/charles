@@ -24,7 +24,7 @@ const CSVConfig = ({
   current,
   
 }) => {
-  console.log(list)
+  // console.log(list)
   const createType = 'CREATE_CSV'
   const resetType = 'RESET_TYPE'
   const loadingColor = 'white'
