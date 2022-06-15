@@ -400,9 +400,14 @@ const CSVConfig = ({
               onClick={() => (
                 stateData.email
                 ? 
-                stateMethod(createType, 'email', false) 
+                (
+                  stateMethod('CREATE_SEARCH', 'email', ''),
+                  stateMethod(createType, 'email', false) 
+                )
                 : 
-                stateMethod(createType, 'email', true)
+                (
+                  stateMethod(createType, 'email', true)
+                )
               )}
             >
             </label>
