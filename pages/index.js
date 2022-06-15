@@ -98,13 +98,13 @@ const Home = ({
 
           {dropdown == 'emails' && 
           <div className="search-bar-dropdown">
-            { emails && emails.map( (item, idx) => 
+            { emails && emails.sort( (a, b) => a > b ? 1 : -1).map( (item, idx) => 
               <div 
                 key={idx} 
                 className="search-bar-dropdown-item"
-                onClick={() => (createType('CREATE_SEARCH', 'email', item), setDropdown(''))}
+                onClick={() => (searchParams.email === item ? createType('CREATE_SEARCH', 'email', ''): createType('CREATE_SEARCH', 'email', item) , setDropdown(''))}
               >
-                {item} {item === searchParams.email ? <SVG svg={'checkmark'}></SVG> : ''}
+                {item.replace('@', '')} {item === searchParams.email ? <SVG svg={'checkmark'}></SVG> : ''}
               </div>
             )}
           </div>
