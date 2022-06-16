@@ -32,7 +32,7 @@ const CSVConfig = ({
   const [error, setError] = useState('')
   const [followersLimit, setFollowersLimit] = useState('')
   
-  // console.log(list)
+  console.log(list)
 
   useEffect(() => {
     if(searchParams.email){
@@ -143,6 +143,7 @@ const CSVConfig = ({
             }
 
             if(item == 'email'){
+              console.log(playlist['description'].match(/([a-zA-Z0-9._-]+@[a-zA-Z0-9._-]+\.[a-zA-Z0-9_-]+)/gi))
               let email = playlist['description'].match(/([a-zA-Z0-9._-]+@[a-zA-Z0-9._-]+\.[a-zA-Z0-9_-]+)/gi)
               if(email) data[item] = email[0]
               if(!email) data[item] = ''
