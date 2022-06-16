@@ -86,6 +86,8 @@ const Home = ({
         <div className="search-themes">
           <div style={{ backgroundColor: 'black'}} onClick={ (e) => setTheme('black')}></div>
           <div style={{ backgroundColor: '#1b998b'}} onClick={ (e) => setTheme('#1b998b')}></div>
+          <div style={{ backgroundColor: '#EED46B'}} onClick={ (e) => setTheme('#EED46B')}></div>
+          <div style={{ backgroundColor: '#091CE8'}} onClick={ (e) => setTheme('#091CE8')}></div>
         </div>
         <div className="search-bar">
           <input 
